@@ -1,0 +1,36 @@
+---
+- name: Provision developer instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    os_image: { 'CentOS 7': 'ami-61bbf104', 'CentOS 6': 'ami-bc8131d4' }
+    instance_type: m3.medium
+    image_type: 'CentOS 7'
+ 
+  tasks:
+  - name: Launch development instances
+    ec2:
+      keypair: "{{ tower_user_name }}"
+      group: default
+      region: us-east-1
+      type: "{{ instance_type }}"
+      image: "{{ os_image[image_type] }}"
+      instance_tags: "{ 'type': '{{ instance_type }}', 'group': 'default', 'Name': '{{ tower_user_name }}_{{ env_tag_name }}' }"
+      count: "{{ machine_count }}"
+      wait: true
+    register: ec2
+
+  - name: Wait for instances to boot
+    pause:
+      seconds: 60
+
+  - name: Wait for SSH to come up
+    wait_for:
+      host: "{{ item.public_dns_name }}"
+      port: 22
+      timeout: 60
+      state: started
+    with_items:
+      - "{{ ec2.instances }}"

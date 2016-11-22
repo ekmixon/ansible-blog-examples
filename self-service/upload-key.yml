@@ -1,0 +1,17 @@
+---
+- name: Upload new ssh key
+  connection: local
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+  - name: Verify key
+    shell: ssh-keygen -l -f /dev/stdin <<<  '{{ key_data }}'
+ 
+  - name: Upload user-provided key
+    ec2_key: 
+      name: "{{ tower_user_name }}"
+      key_material: "{{ key_data }}"
+      region: us-east-1
+      state: present
+  

@@ -1,0 +1,52 @@
+{
+  "description": "",
+  "name": "",
+  "spec": [
+    {
+      "required": true,
+      "min": 0,
+      "default": 1,
+      "max": 5,
+      "question_description": "",
+      "choices": "",
+      "new_question": true,
+      "variable": "machine_count",
+      "question_name": "How many instances do you need?",
+      "type": "integer"
+    },
+    {
+      "question_description": "",
+      "min": null,
+      "default": "m3.medium",
+      "max": null,
+      "required": true,
+      "choices": "m3.medium\nm3.large\nm3.xlarge",
+      "variable": "instance_type",
+      "question_name": "What instance size should we provision?",
+      "type": "multiplechoice"
+    },
+    {
+      "required": true,
+      "min": null,
+      "default": "CentOS 7",
+      "max": null,
+      "question_description": "",
+      "choices": "CentOS 6\nCentOS 7",
+      "new_question": true,
+      "variable": "image_type",
+      "question_name": "What OS should we provision?",
+      "type": "multiplechoice"
+    },
+    {
+      "question_description": "",
+      "min": 0,
+      "default": "",
+      "max": 32,
+      "required": true,
+      "choices": "",
+      "variable": "env_tag_name",
+      "question_name": "Please name your development environment.",
+      "type": "text"
+    }
+  ]
+}

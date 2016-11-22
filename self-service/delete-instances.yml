@@ -1,0 +1,18 @@
+---
+- name: terminate hosts
+  hosts: "{{ ec2_hosts }}" 
+  gather_facts: false
+  connection: local  
+
+  vars:
+    ec2_hosts: tag_Name_{{ tower_user_name }}_{{ env_tag_name }}
+
+  tasks:
+  - name: terminate EC2 hosts
+    ec2:
+      region: us-east-1
+      instance_ids: "{{ item }}"
+      state: absent
+      wait: True
+    with_items:
+      - "{{ hostvars[inventory_hostname]['ec2_id'] }}"

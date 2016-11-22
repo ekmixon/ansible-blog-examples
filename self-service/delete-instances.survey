@@ -1,0 +1,17 @@
+{
+  "description": "",
+  "name": "",
+  "spec": [
+    {
+      "question_description": "",
+      "min": 0,
+      "default": "",
+      "max": 32,
+      "required": true,
+      "choices": "",
+      "variable": "env_tag_name",
+      "question_name": "What environment should we deprovision?",
+      "type": "text"
+    }
+  ]
+}
