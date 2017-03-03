@@ -23,7 +23,7 @@ usa = {
     "children": [ 'southeast' ]
 }
 
-inv = { 'atlanta': atl, 'raleigh': rdu, 'southeast': se, 'usa': usa }
+inv = { 'atlanta': atl, 'raleigh': rdu, 'southeast': se, 'usa': usa, '_meta' : { 'hostvars': {} } }
 
 if len(sys.argv) > 1 and sys.argv[1] == '--list':
     print json.dumps(inv)
