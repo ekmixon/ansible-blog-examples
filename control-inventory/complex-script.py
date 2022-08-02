@@ -32,43 +32,33 @@ BASE_PATH="/var/lib/awx/projects"
 def rest_get(request):
     c = api.Client()
     response = c.get(request)
-    if response.ok:
-        j = response.json()
-        if j.has_key('results'):
-            return j['results'][0]
-        else:
-            return j
-    else:
+    if not response.ok:
         return None
+    j = response.json()
+    return j['results'][0] if j.has_key('results') else j
 
 # Get ID from project name
 def get_project_id(project):
-    result = rest_get("projects/?name=%s" % (project,))
-    if result:
+    if result := rest_get(f"projects/?name={project}"):
         return result['id']
     else:
         return None
 
 # If a project update is running, wait up two minutes for it to finish
 def wait_for_project_update(project_id):
-    retries = 120
-    
-    while retries > 0:
+    for _ in range(120, 0, -1):
         result = rest_get("projects/%d" %(project_id,))
         if not result:
             return
         if not result['related'].has_key('current_update'):
             return
         sleep(1)
-        retries = retries - 1
     return
 
 # Find the toplevel path to the synced project's on-disk location
 def get_file_path(project_id):
     result = rest_get("projects/%d" % (project_id,))
-    if not result:
-        return None
-    return '%s/%s' % (BASE_PATH, result['local_path'])
+    return f"{BASE_PATH}/{result['local_path']}" if result else None
 
 # Read and parse inventory
 def read_file(project_id, inv_file):
@@ -77,7 +67,7 @@ def read_file(project_id, inv_file):
         return ""
     group = Group(name='all')
     groups = { 'all': group }
-    parser = InventoryINIParser([], groups, filename = "%s/%s" %(file_path, inv_file))
+    parser = InventoryINIParser([], groups, filename=f"{file_path}/{inv_file}")
     return groups
 
 # Convert inventory structure to JSON
@@ -86,13 +76,10 @@ def dump_json(inventory):
     for group in inventory.values():
         if group.name == 'all':
             continue
-        g_obj = {}
-        g_obj['children'] = []
+        g_obj = {'children': []}
         for child in group.child_groups:
             g_obj['children'].append(child.name)
-        g_obj['hosts'] = []
-        for host in group.hosts:
-            g_obj['hosts'].append(host.name)
+        g_obj['hosts'] = [host.name for host in group.hosts]
         g_obj['vars'] = group.vars
         ret[group.name] = g_obj
     meta = { 'hostvars': {} }
